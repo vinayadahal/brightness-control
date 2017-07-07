@@ -1,80 +1,109 @@
 package com.brightnesscontrol.activites;
 
-import android.annotation.TargetApi;
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.content.ContentResolver;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 
 import com.brightnesscontrol.R;
+import com.brightnesscontrol.listeners.BrightnessSeekBarListener;
+import com.brightnesscontrol.services.OverlayService;
+import com.brightnesscontrol.services.SettingWriter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private SeekBar brightnessSeekBar;
-    private int brightness = 0;
-    private ContentResolver cResolver;
-    private Context ctx = this;
-
+    public static Context ctx_main_activity;
+    private String SettingFileName = "alphaValue.txt";
+    SettingWriter objSW = new SettingWriter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.layoutbrightness);
+        setContentView(R.layout.layout_brightness);
 
-//        WindowManager.LayoutParams wlp = getWindow().getAttributes();
-//        wlp.dimAmount = 0;
-//        wlp.flags = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
-//                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
-//        getWindow().setAttributes(wlp);
+        ctx_main_activity = this;
 
-        Button btnStart = (Button) findViewById(R.id.startBtn);
+        brightnessSeekBar = findViewById(R.id.brightbar);
+        brightnessSeekBar.setMax(255);
+        checkBrightnessLevel();
+
+        brightnessSeekBar.setOnSeekBarChangeListener(new BrightnessSeekBarListener());
+        brightnessSeekBar.setVisibility(View.GONE);
+
+        final Intent intent = new Intent(MainActivity.this, OverlayService.class);
+        final Button btnStart = findViewById(R.id.startBtn);
+        final Button btnStop = findViewById(R.id.stopBtn);
+
+        btnStop.setVisibility(View.GONE);
+        btnStart.setVisibility(View.VISIBLE);
+
+        if (isMyServiceRunning(OverlayService.class)) {
+            btnStart.setVisibility(View.GONE);
+            btnStop.setVisibility(View.VISIBLE);
+            brightnessSeekBar.setVisibility(View.VISIBLE);
+        }
+
         btnStart.setOnClickListener(new View.OnClickListener() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, BrightnessControl.class);
-                startActivity(intent);
+                startService(intent);
+                brightnessSeekBar.setVisibility(View.VISIBLE);
+                btnStart.setVisibility(View.GONE);
+                btnStop.setVisibility(View.VISIBLE);
             }
         });
 
-        cResolver = getContentResolver();
-
-        brightnessSeekBar = (SeekBar) findViewById(R.id.brightbar);
-        brightnessSeekBar.setMax(255);
-        brightnessSeekBar.setProgress(brightness);
-
-        brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
-                try {
-                    brightness = Settings.System.getInt(cResolver, Settings.System.SCREEN_BRIGHTNESS);
-                    System.out.println("Final brightness::::::::::::" + brightness);
-                } catch (Settings.SettingNotFoundException e) {
-                    System.out.println("Cannot access system brightness");
-                }
-            }
-
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Settings.System.putInt(cResolver,
-                        Settings.System.SCREEN_BRIGHTNESS_MODE,
-                        Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-                brightness = progress;
-                Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
+        btnStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopService(intent);
+                brightnessSeekBar.setVisibility(View.GONE);
+                btnStop.setVisibility(View.GONE);
+                btnStart.setVisibility(View.VISIBLE);
             }
         });
+
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String readAlphaFromFile() {
+        String alpha;
+        if (objSW.checkFile(SettingFileName)) {
+            alpha = new SettingWriter().readFile(SettingFileName).toString().trim();
+        } else {
+            alpha = "0";
+        }
+        return alpha;
+    }
+
+    private void checkBrightnessLevel() {
+        if (!objSW.checkFile(SettingFileName)) {
+            brightnessSeekBar.setProgress(0);
+        } else {
+            brightnessSeekBar.setProgress(255 - Integer.parseInt(readAlphaFromFile()));
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        String alphaVal = Integer.toString(new BrightnessSeekBarListener().alphaValue);
+        new SettingWriter().writeFile(alphaVal, SettingFileName);
+        super.onDestroy();
     }
 }
 
