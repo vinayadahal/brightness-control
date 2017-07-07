@@ -64,6 +64,7 @@ public class MainActivity extends Activity {
             public void onClick(View view) {
                 stopService(intent);
                 brightnessSeekBar.setVisibility(View.GONE);
+                alphaWriter();
                 btnStop.setVisibility(View.GONE);
                 btnStart.setVisibility(View.VISIBLE);
             }
@@ -99,10 +100,14 @@ public class MainActivity extends Activity {
         }
     }
 
-    @Override
-    public void onDestroy() {
+    private void alphaWriter() {
         String alphaVal = Integer.toString(new BrightnessSeekBarListener().alphaValue);
         new SettingWriter().writeFile(alphaVal, SettingFileName);
+    }
+
+    @Override
+    public void onDestroy() {
+        alphaWriter();
         super.onDestroy();
     }
 }
