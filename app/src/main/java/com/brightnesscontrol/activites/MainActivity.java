@@ -8,8 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.brightnesscontrol.R;
+import com.brightnesscontrol.commons.StaticVariables;
+import com.brightnesscontrol.components.ToolBar;
 import com.brightnesscontrol.listeners.BrightnessSeekBarListener;
 import com.brightnesscontrol.services.OverlayService;
 import com.brightnesscontrol.services.SettingWriter;
@@ -17,17 +20,17 @@ import com.brightnesscontrol.services.SettingWriter;
 public class MainActivity extends Activity {
 
     private SeekBar brightnessSeekBar;
-    public static Context ctx_main_activity;
     private String SettingFileName = "alphaValue.txt";
     SettingWriter objSW = new SettingWriter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        new StaticVariables().ctx_main_activity = this;
+        // creates a custom toolbar
+        new ToolBar().toolbarLoader(this, savedInstanceState);
 
         setContentView(R.layout.layout_brightness);
-
-        ctx_main_activity = this;
 
         brightnessSeekBar = findViewById(R.id.brightbar);
         brightnessSeekBar.setMax(255);
@@ -39,14 +42,19 @@ public class MainActivity extends Activity {
         final Intent intent = new Intent(MainActivity.this, OverlayService.class);
         final Button btnStart = findViewById(R.id.startBtn);
         final Button btnStop = findViewById(R.id.stopBtn);
+        final TextView txtViewSlider = findViewById(R.id.textViewSilder);
+
 
         btnStop.setVisibility(View.GONE);
         btnStart.setVisibility(View.VISIBLE);
+        txtViewSlider.setVisibility(View.GONE);
 
         if (isMyServiceRunning(OverlayService.class)) {
             btnStart.setVisibility(View.GONE);
             btnStop.setVisibility(View.VISIBLE);
             brightnessSeekBar.setVisibility(View.VISIBLE);
+            txtViewSlider.setVisibility(View.VISIBLE);
+            checkBrightnessLevel();
         }
 
         btnStart.setOnClickListener(new View.OnClickListener() {
@@ -56,6 +64,8 @@ public class MainActivity extends Activity {
                 brightnessSeekBar.setVisibility(View.VISIBLE);
                 btnStart.setVisibility(View.GONE);
                 btnStop.setVisibility(View.VISIBLE);
+                txtViewSlider.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -67,6 +77,7 @@ public class MainActivity extends Activity {
                 alphaWriter();
                 btnStop.setVisibility(View.GONE);
                 btnStart.setVisibility(View.VISIBLE);
+                txtViewSlider.setVisibility(View.GONE);
             }
         });
 
@@ -110,5 +121,7 @@ public class MainActivity extends Activity {
         alphaWriter();
         super.onDestroy();
     }
+
+
 }
 

@@ -9,12 +9,13 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.brightnesscontrol.activites.MainActivity;
+import com.brightnesscontrol.commons.StaticVariables;
 
 public class OverlayService extends Service {
 
-    public static LinearLayout oView;
-    public static Context ctx_overlay;
+
     MainActivity objMainActivity = new MainActivity();
+    StaticVariables objStaticVariable = new StaticVariables();
 
     @Override
     public IBinder onBind(Intent i) {
@@ -24,10 +25,10 @@ public class OverlayService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        ctx_overlay = this;
-        oView = new LinearLayout(this);
-        oView.setBackgroundColor(0xdd000000); // The translucent black color
-        oView.getBackground().setAlpha(Integer.parseInt(objMainActivity.readAlphaFromFile()));
+        objStaticVariable.ctx_overlay = this;
+        objStaticVariable.oView = new LinearLayout(this);
+        objStaticVariable.oView.setBackgroundColor(0xdd000000); // The translucent black color
+        objStaticVariable.oView.getBackground().setAlpha(Integer.parseInt(objMainActivity.readAlphaFromFile()));
 
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -37,15 +38,15 @@ public class OverlayService extends Service {
                 PixelFormat.TRANSLUCENT);
 
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        wm.addView(oView, params);
+        wm.addView(objStaticVariable.oView, params);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (oView != null) {
+        if (objStaticVariable.oView != null) {
             WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-            wm.removeView(oView);
+            wm.removeView(objStaticVariable.oView);
         }
     }
 }

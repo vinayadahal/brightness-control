@@ -5,28 +5,69 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/startBtn"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start" />
+        android:background="?attr/colorPrimary"
+        android:minHeight="@dimen/abc_action_bar_default_height_material">
 
-    <Button
-        android:id="@+id/stopBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stop" />
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Brightness Control"
+            android:textColor="#fff"
+            android:textSize="16dp" />
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Slide the bar to change the brightness:" />
+    </android.support.v7.widget.Toolbar>
 
-    <SeekBar
-        android:id="@+id/brightbar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dip"
-        android:layout_marginRight="30dip" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Click button below to enable brightness control:" />
+
+        <Button
+            android:id="@+id/startBtn"
+            android:layout_width="70dp"
+            android:layout_height="35dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="?attr/colorPrimary"
+            android:text="Start"
+            android:textColor="#fff"
+            android:textSize="14dp" />
+
+        <Button
+            android:id="@+id/stopBtn"
+            android:layout_width="70dp"
+            android:layout_height="35dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="?attr/colorPrimary"
+            android:text="Stop"
+            android:textColor="#fff"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/textViewSilder"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Slide the bar to change the brightness:" />
+
+        <SeekBar
+            android:id="@+id/brightbar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dip"
+            android:layout_marginRight="30dip" />
+
+    </LinearLayout>
 
 </LinearLayout>

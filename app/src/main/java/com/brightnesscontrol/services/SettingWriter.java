@@ -1,20 +1,21 @@
 package com.brightnesscontrol.services;
 
 
+import com.brightnesscontrol.commons.StaticVariables;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
-import static com.brightnesscontrol.activites.MainActivity.ctx_main_activity;
-
 public class SettingWriter {
 
     StringBuilder text = new StringBuilder();
+    StaticVariables objStaticVariable = new StaticVariables();
 
     public StringBuilder readFile(String filename) {
-        File file = new File(ctx_main_activity.getApplicationContext().getFilesDir() + "/" + filename);
+        File file = new File(objStaticVariable.ctx_main_activity.getApplicationContext().getFilesDir() + "/" + filename);
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
@@ -33,7 +34,7 @@ public class SettingWriter {
     public boolean writeFile(String data, String filename) {
         FileOutputStream outputStream;
         try {
-            outputStream = ctx_main_activity.openFileOutput(filename, ctx_main_activity.MODE_PRIVATE);
+            outputStream = objStaticVariable.ctx_main_activity.openFileOutput(filename, objStaticVariable.ctx_main_activity.MODE_PRIVATE);
             outputStream.write(data.getBytes());
             outputStream.close();
             return true;
@@ -44,7 +45,7 @@ public class SettingWriter {
     }
 
     public boolean checkFile(String filename) {
-        File file = new File(ctx_main_activity.getApplicationContext().getFilesDir() + "/" + filename);
+        File file = new File(objStaticVariable.ctx_main_activity.getApplicationContext().getFilesDir() + "/" + filename);
         return file.exists();
     }
 
