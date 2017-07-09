@@ -21,30 +21,46 @@ public class MainActivity extends Activity {
 
     private SeekBar brightnessSeekBar;
     private String SettingFileName = "alphaValue.txt";
+    public static int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
     SettingWriter objSW = new SettingWriter();
+
+    Intent intent;
+    Button btnStart, btnStop;
+    TextView txtViewSlider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         new StaticVariables().ctx_main_activity = this;
-        // creates a custom toolbar
-        new ToolBar().toolbarLoader(this, savedInstanceState);
 
         setContentView(R.layout.layout_brightness);
 
+        new ToolBar().toolbarLoader(this, savedInstanceState);
+
+        componentInit();
+
+        seekbarLoader();
+
+        overlayServiceRunner();
+
+    }
+
+    private void componentInit() {
+        intent = new Intent(MainActivity.this, OverlayService.class);
+        btnStart = findViewById(R.id.startBtn);
+        btnStop = findViewById(R.id.stopBtn);
+        txtViewSlider = findViewById(R.id.textViewSilder);
+    }
+
+    private void seekbarLoader() {
         brightnessSeekBar = findViewById(R.id.brightbar);
         brightnessSeekBar.setMax(255);
         checkBrightnessLevel();
-
         brightnessSeekBar.setOnSeekBarChangeListener(new BrightnessSeekBarListener());
         brightnessSeekBar.setVisibility(View.GONE);
+    }
 
-        final Intent intent = new Intent(MainActivity.this, OverlayService.class);
-        final Button btnStart = findViewById(R.id.startBtn);
-        final Button btnStop = findViewById(R.id.stopBtn);
-        final TextView txtViewSlider = findViewById(R.id.textViewSilder);
-
-
+    private void overlayServiceRunner() {
         btnStop.setVisibility(View.GONE);
         btnStart.setVisibility(View.VISIBLE);
         txtViewSlider.setVisibility(View.GONE);
@@ -80,7 +96,6 @@ public class MainActivity extends Activity {
                 txtViewSlider.setVisibility(View.GONE);
             }
         });
-
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -100,6 +115,7 @@ public class MainActivity extends Activity {
         } else {
             alpha = "0";
         }
+        System.out.println("Returning alpha::::::::::::: " + alpha);
         return alpha;
     }
 
@@ -122,6 +138,4 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
-
 }
-

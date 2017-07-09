@@ -12,13 +12,13 @@
         android:background="?attr/colorPrimary"
         android:minHeight="@dimen/abc_action_bar_default_height_material">
 
-        <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Brightness Control"
-            android:textColor="#fff"
-            android:textSize="16dp" />
+        <!--<TextView-->
+            <!--android:id="@+id/toolbar_title"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Brightness Control"-->
+            <!--android:textColor="#fff"-->
+            <!--android:textSize="16dp" />-->
 
     </android.support.v7.widget.Toolbar>
 
