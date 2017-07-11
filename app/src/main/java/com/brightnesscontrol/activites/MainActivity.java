@@ -21,7 +21,6 @@ public class MainActivity extends Activity {
 
     private SeekBar brightnessSeekBar;
     private String SettingFileName = "alphaValue.txt";
-    public static int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
     SettingWriter objSW = new SettingWriter();
 
     Intent intent;
@@ -115,7 +114,6 @@ public class MainActivity extends Activity {
         } else {
             alpha = "0";
         }
-        System.out.println("Returning alpha::::::::::::: " + alpha);
         return alpha;
     }
 
